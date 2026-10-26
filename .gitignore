@@ -5,6 +5,7 @@
 
 # Ignore all files and folders in root
 *
+!/anaconda.yaml
 !/conda-forge.yml
 !.recipe_maintainers.json
 
