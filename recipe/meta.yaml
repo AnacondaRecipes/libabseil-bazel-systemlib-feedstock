@@ -1,45 +1,46 @@
-context:
-  version: "20260526.0"
+{% set version = libabseil %}
 
 package:
   name: libabseil-bazel-systemlib
-  version: ${{ version }}
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/abseil/abseil-cpp/archive/refs/tags/${{ version }}.tar.gz
+  url: https://github.com/abseil/abseil-cpp/archive/refs/tags/{{ version }}.0.tar.gz
   sha256: 6e1aee535473414164bf83e4ebc40240dec71a4701f8a642d906e95bea1aea0c
 
 build:
   number: 0
-  noarch: generic
+  skip: true  # [win]
 
 requirements:
   build:
     - sed
+  host:
+    - libabseil {{ libabseil }}
   run:
-    - libabseil ${{ version }}.*
+    - libabseil {{ libabseil }}
 
-tests:
-  - package_contents:
-      files:
-        - share/bazel/systemlibs/absl/BUILD
-  - script: tests/run_test.sh
-    files:
-      recipe:
-        - tests/
-    requirements:
-      build:
-        - ${{ compiler('cxx') }}
-        - bazel >=8
-        - bazel-toolchain >=0.5.11
-      run:
-        - libabseil ${{ version }}.*
+test:
+  requires:
+    - {{ stdlib('c') }}
+    - cxx-compiler
+    - c-compiler
+    - bazel >=8
+    - bazel-toolchain >=0.5.6
+    - libabseil {{ version }}.*
+  files:
+    - tests/
+  commands:
+    - test -f ${PREFIX}/share/bazel/systemlibs/absl/BUILD
+    - bash tests/run_test.sh
 
 about:
-  homepage: https://github.com/abseil/abseil-cpp
-  repository: https://github.com/conda-forge/libabseil-bazel-systemlib-feedstock
+  home: https://github.com/abseil/abseil-cpp
+  dev_url: https://github.com/conda-forge/libabseil-bazel-systemlib-feedstock
+  doc_url: https://github.com/conda-forge/libabseil-bazel-systemlib-feedstock
   license: Apache-2.0
   license_file: LICENSE
+  license_family: Apache
   summary: Bazel systemlib definitions for abseil
   description: |
     You can use the systemlib definitions by assembling them together with
@@ -58,7 +59,6 @@ about:
         path = "./third_party/systemlibs/absl",
     )
     ```
-
 
 extra:
   recipe-maintainers:
